@@ -18,9 +18,11 @@ Build the demo as follows:
 
 ```bash
 git clone --recursive https://github.com/OpenCyphal/demos
-cd demos/differential_pressure_sensor
+cd demos/module_th
+cp -r ../public_regulated_data_types/reg/rmap ../submodules/public_regulated_data_types/reg/
 mkdir build && cd build
 cmake .. && make
+yakut compile ../../submodules/public_regulated_data_types/uavcan ../../submodules/public_regulated_data_types/reg
 ```
 
 
@@ -41,7 +43,7 @@ Launch the node
 (it is built to emulate an embedded system so it does not accept any arguments or environment variables):
 
 ```bash
-./differential_pressure_sensor
+./module_th
 ```
 
 It may print a few informational messages and then go silent.
@@ -82,7 +84,7 @@ First, it helps to know what registers are available at all:
 $ export UAVCAN__CAN__IFACE="socketcan:vcan0"
 $ export UAVCAN__NODE__ID=126                   # This node-ID is for Yakut.
 $ y rl 125
-[reg.udral.service.pitot, uavcan.can.mtu, uavcan.node.description, uavcan.node.id, uavcan.node.unique_id, uavcan.pub.airspeed.differential_pressure.id, uavcan.pub.airspeed.differential_pressure.type, uavcan.pub.airspeed.static_air_temperature.id, uavcan.pub.airspeed.static_air_temperature.type, udral.pnp.cookie]
+[reg.udral.service.pitot, uavcan.can.mtu, uavcan.node.description, uavcan.node.id, uavcan.node.unique_id, uavcan.pub.reg.rmap.module.TH.1.0.id, uavcan.pub.reg.rmap.module.TH.1.0.type, udral.pnp.cookie]
 $ y rl 125, | y rb                              # You can also read all registers like this
 # (output not shown)
 ```
@@ -90,8 +92,7 @@ $ y rl 125, | y rb                              # You can also read all register
 Configure the subject-IDs:
 
 ```bash
-y r 125 uavcan.pub.airspeed.differential_pressure.id  100
-y r 125 uavcan.pub.airspeed.static_air_temperature.id 101
+y r 125 uavcan.pub.reg.rmap.module.TH.1.0.id 100
 ```
 
 The node is configured now, but we need to restart it before the configuration parameter changes take effect:
@@ -108,7 +109,7 @@ The monitor will also show the subjects that we just configured.
 You can subscribe to the published differential pressure using Yakut as follows:
 
 ```bash
-y sub 100:uavcan.si.unit.pressure.scalar
+y sub 100:reg.rmap.module.TH
 ```
 
 You can erase the configuration and go back to factory defaults as follows:

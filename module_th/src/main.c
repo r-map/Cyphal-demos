@@ -186,10 +186,19 @@ static void handleFastLoop(State* const state, const CanardMicrosecond monotonic
     if (!anonymous && (state->port_id.pub.module_th <= CANARD_SUBJECT_ID_MAX))
     {
         reg_rmap_module_TH_1_0 msg = {0};
-        msg.temperature.val.value                 = (int32_t) (rand() * 20 + 27315);  // TODO: sample data from the real sensor.
-        msg.temperature.confidence.value          = (uint8_t) (rand() * 100);  // TODO: sample data from the real sensor.
-	msg.humidity.val.value                    = (int32_t) (rand() * 20 *100);  // TODO: sample data from the real sensor.
-	msg.humidity.confidence.value             = (uint8_t) (rand() * 100);  // TODO: sample data from the real sensor.
+
+	msg.metadata.timerange.Pindicator = 254;
+	msg.metadata.timerange.P1 = 0;
+	msg.metadata.timerange.P2 = 0;
+	msg.metadata.level.LevelType1 = 103;
+	msg.metadata.level.L1 = 2000;
+	msg.metadata.level.LevelType2 = 0;
+	msg.metadata.level.L2 = 0;
+	
+        msg.temperature.val.value                 = (int32_t) (rand() % 2000 + 27315);  // TODO: sample data from the real sensor.
+        msg.temperature.confidence.value          = (uint8_t) (rand() % 100       );  // TODO: sample data from the real sensor.
+	msg.humidity.val.value                    = (int32_t) (rand() % 100       );  // TODO: sample data from the real sensor.
+	msg.humidity.confidence.value             = (uint8_t) (rand() % 100       );  // TODO: sample data from the real sensor.
         // Serialize and publish the message:
         uint8_t      serialized[reg_rmap_module_TH_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};
         size_t       serialized_size = sizeof(serialized);
@@ -288,10 +297,18 @@ static void handle1HzLoop(State* const state, const CanardMicrosecond monotonic_
     if (!anonymous && state->port_id.pub.module_th <= CANARD_SUBJECT_ID_MAX)
     {
         reg_rmap_module_TH_1_0 msg = {0};
-        msg.temperature.val.value                 = (int32_t) (rand() * 20 + 27315);  // TODO: sample data from the real sensor.
-        msg.temperature.confidence.value          = (uint8_t) (rand() * 100);  // TODO: sample data from the real sensor.
-	msg.humidity.val.value                    = (int32_t) (rand() * 20 *100);  // TODO: sample data from the real sensor.
-	msg.humidity.confidence.value             = (uint8_t) (rand() * 100);  // TODO: sample data from the real sensor.
+	msg.metadata.timerange.Pindicator = 254;
+	msg.metadata.timerange.P1 = 0;
+	msg.metadata.timerange.P2 = 0;
+	msg.metadata.level.LevelType1 = 103;
+	msg.metadata.level.L1 = 2000;
+	msg.metadata.level.LevelType2 = 0;
+	msg.metadata.level.L2 = 0;
+	
+        msg.temperature.val.value                 = (int32_t) (rand() % 2000 + 27315);  // TODO: sample data from the real sensor.
+        msg.temperature.confidence.value          = (uint8_t) (rand() % 100       );  // TODO: sample data from the real sensor.
+	msg.humidity.val.value                    = (int32_t) (rand() % 100       );  // TODO: sample data from the real sensor.
+	msg.humidity.confidence.value             = (uint8_t) (rand() % 100       );  // TODO: sample data from the real sensor.
 
         // Serialize and publish the message:
         uint8_t      serialized[reg_rmap_module_TH_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};

@@ -1,5 +1,0 @@
-uint8 LevelType1
-uint16 L1
-uint8 LevelType2
-uint16 L2
-@sealed

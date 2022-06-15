@@ -3,7 +3,7 @@
 # Author: Pavel Kirienko <pavel@opencyphal.org>
 
 cmake_minimum_required(VERSION 3.17)
-project(differential_pressure_sensor C CXX)
+project(module_th C CXX)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 set(submodules "${CMAKE_SOURCE_DIR}/../submodules")
@@ -26,7 +26,7 @@ add_definitions(
         -DVERSION_MAJOR=1
         -DVERSION_MINOR=0
         -DVCS_REVISION_ID=0x${vcs_revision_id}ULL
-        -DNODE_NAME="org.opencyphal.demos.differential_pressure"
+        -DNODE_NAME="org.opencyphal.demos.module_th"
 )
 
 # Transpile DSDL into C using Nunavut. Install Nunavut as follows: pip install nunavut.
@@ -72,10 +72,10 @@ add_library(o1heap STATIC ${submodules}/o1heap/o1heap/o1heap.c)
 include_directories(SYSTEM ${submodules}/o1heap/o1heap/)
 
 # Build the application.
-add_executable(differential_pressure_sensor
+add_executable(module_th
         src/main.c
         src/register.c
         src/socketcan.c
 )
-add_dependencies(differential_pressure_sensor dsdl_uavcan dsdl_reg)
-target_link_libraries(differential_pressure_sensor canard o1heap)
+add_dependencies(module_th dsdl_uavcan dsdl_reg)
+target_link_libraries(module_th canard o1heap)
