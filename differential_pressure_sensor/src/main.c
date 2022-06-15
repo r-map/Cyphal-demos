@@ -27,8 +27,10 @@
 #include <uavcan/pnp/NodeIDAllocationData_2_0.h>
 
 // Use /sample/ instead of /unit/ if you need timestamping.
-#include <uavcan/si/unit/pressure/Scalar_1_0.h>
-#include <uavcan/si/unit/temperature/Scalar_1_0.h>
+//#include <uavcan/si/unit/pressure/Scalar_1_0.h>
+//#include <uavcan/si/unit/temperature/Scalar_1_0.h>
+
+#include <reg/rmap/_module/TH_1_0.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,8 +59,7 @@ typedef struct State
     {
         struct
         {
-            CanardPortID differential_pressure;   //< ...pressure.Scalar
-            CanardPortID static_air_temperature;  //< ...temperature.Scalar
+            CanardPortID module_th;
         } pub;
     } port_id;
 
@@ -72,8 +73,7 @@ typedef struct State
         uint64_t uavcan_node_port_list;
         uint64_t uavcan_pnp_allocation;
         // Tip: messages published synchronously can share the same transfer-ID.
-        uint64_t differential_pressure;
-        uint64_t static_air_temperature;
+        uint64_t module_th;
     } next_transfer_id;
 } State;
 
@@ -183,23 +183,26 @@ static void handleFastLoop(State* const state, const CanardMicrosecond monotonic
     const bool anonymous = state->canard.node_id > CANARD_NODE_ID_MAX;
 
     // Publish differential pressure reading if the subject is enabled and the node is non-anonymous.
-    if (!anonymous && (state->port_id.pub.differential_pressure <= CANARD_SUBJECT_ID_MAX))
+    if (!anonymous && (state->port_id.pub.module_th <= CANARD_SUBJECT_ID_MAX))
     {
-        uavcan_si_unit_pressure_Scalar_1_0 msg = {0};
-        msg.pascal                             = (float) rand() * 0.1F;  // TODO: sample data from the real sensor.
+        reg_rmap_module_TH_1_0 msg = {0};
+        msg.temperature.val.value                 = (int32_t) (rand() * 20 + 27315);  // TODO: sample data from the real sensor.
+        msg.temperature.confidence.value          = (uint8_t) (rand() * 100);  // TODO: sample data from the real sensor.
+	msg.humidity.val.value                    = (int32_t) (rand() * 20 *100);  // TODO: sample data from the real sensor.
+	msg.humidity.confidence.value             = (uint8_t) (rand() * 100);  // TODO: sample data from the real sensor.
         // Serialize and publish the message:
-        uint8_t      serialized[uavcan_si_unit_pressure_Scalar_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};
+        uint8_t      serialized[reg_rmap_module_TH_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};
         size_t       serialized_size = sizeof(serialized);
-        const int8_t err = uavcan_si_unit_pressure_Scalar_1_0_serialize_(&msg, &serialized[0], &serialized_size);
+        const int8_t err = reg_rmap_module_TH_1_0_serialize_(&msg, &serialized[0], &serialized_size);
         assert(err >= 0);
         if (err >= 0)
         {
             const CanardTransferMetadata meta = {
                 .priority       = CanardPriorityHigh,
                 .transfer_kind  = CanardTransferKindMessage,
-                .port_id        = state->port_id.pub.differential_pressure,
+                .port_id        = state->port_id.pub.module_th,
                 .remote_node_id = CANARD_NODE_ID_UNSET,
-                .transfer_id    = (CanardTransferID) state->next_transfer_id.differential_pressure++,  // Increment!
+                .transfer_id    = (CanardTransferID) state->next_transfer_id.module_th++,  // Increment!
             };
             send(state, monotonic_time + 10 * KILO, &meta, serialized_size, &serialized[0]);
         }
@@ -281,24 +284,28 @@ static void handle1HzLoop(State* const state, const CanardMicrosecond monotonic_
         }
     }
 
-    // Publish static air temperature reading if the subject is enabled and the node is non-anonymous.
-    if (!anonymous && state->port_id.pub.static_air_temperature <= CANARD_SUBJECT_ID_MAX)
+    // Publish module_th reading if the subject is enabled and the node is non-anonymous.
+    if (!anonymous && state->port_id.pub.module_th <= CANARD_SUBJECT_ID_MAX)
     {
-        uavcan_si_unit_temperature_Scalar_1_0 msg = {0};
-        msg.kelvin                                = (float) rand() * 0.01F;  // TODO: sample data from the real sensor.
+        reg_rmap_module_TH_1_0 msg = {0};
+        msg.temperature.val.value                 = (int32_t) (rand() * 20 + 27315);  // TODO: sample data from the real sensor.
+        msg.temperature.confidence.value          = (uint8_t) (rand() * 100);  // TODO: sample data from the real sensor.
+	msg.humidity.val.value                    = (int32_t) (rand() * 20 *100);  // TODO: sample data from the real sensor.
+	msg.humidity.confidence.value             = (uint8_t) (rand() * 100);  // TODO: sample data from the real sensor.
+
         // Serialize and publish the message:
-        uint8_t      serialized[uavcan_si_unit_temperature_Scalar_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};
+        uint8_t      serialized[reg_rmap_module_TH_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};
         size_t       serialized_size = sizeof(serialized);
-        const int8_t err = uavcan_si_unit_temperature_Scalar_1_0_serialize_(&msg, &serialized[0], &serialized_size);
+        const int8_t err = reg_rmap_module_TH_1_0_serialize_(&msg, &serialized[0], &serialized_size);
         assert(err >= 0);
-        if (err >= 0)
+	if (err >= 0)
         {
             const CanardTransferMetadata meta = {
                 .priority       = CanardPriorityNominal,
                 .transfer_kind  = CanardTransferKindMessage,
-                .port_id        = state->port_id.pub.static_air_temperature,
+                .port_id        = state->port_id.pub.module_th,
                 .remote_node_id = CANARD_NODE_ID_UNSET,
-                .transfer_id    = (CanardTransferID) state->next_transfer_id.static_air_temperature++,  // Increment!
+                .transfer_id    = (CanardTransferID) state->next_transfer_id.module_th++,  // Increment!
             };
             send(state, monotonic_time + MEGA, &meta, serialized_size, &serialized[0]);
         }
@@ -349,13 +356,9 @@ static void handle01HzLoop(State* const state, const CanardMicrosecond monotonic
             size_t* const cnt                                 = &m.publishers.sparse_list.count;
             m.publishers.sparse_list.elements[(*cnt)++].value = uavcan_node_Heartbeat_1_0_FIXED_PORT_ID_;
             m.publishers.sparse_list.elements[(*cnt)++].value = uavcan_node_port_List_0_1_FIXED_PORT_ID_;
-            if (state->port_id.pub.differential_pressure <= CANARD_SUBJECT_ID_MAX)
+            if (state->port_id.pub.module_th <= CANARD_SUBJECT_ID_MAX)
             {
-                m.publishers.sparse_list.elements[(*cnt)++].value = state->port_id.pub.differential_pressure;
-            }
-            if (state->port_id.pub.static_air_temperature <= CANARD_SUBJECT_ID_MAX)
-            {
-                m.publishers.sparse_list.elements[(*cnt)++].value = state->port_id.pub.static_air_temperature;
+                m.publishers.sparse_list.elements[(*cnt)++].value = state->port_id.pub.module_th;
             }
         }
 
@@ -717,12 +720,9 @@ int main(const int argc, char* const argv[])
 
     // Load the port-IDs from the registers. You can implement hot-reloading at runtime if desired.
     // Publications:
-    state.port_id.pub.differential_pressure =
-        getPublisherSubjectID("airspeed.differential_pressure",
-                              uavcan_si_unit_temperature_Scalar_1_0_FULL_NAME_AND_VERSION_);
-    state.port_id.pub.static_air_temperature =
-        getPublisherSubjectID("airspeed.static_air_temperature",
-                              uavcan_si_unit_temperature_Scalar_1_0_FULL_NAME_AND_VERSION_);
+    state.port_id.pub.module_th =
+        getPublisherSubjectID("reg.rmap.module.TH.1.0",
+			      reg_rmap_module_TH_1_0_FULL_NAME_AND_VERSION_);
     // Subscriptions:
     // (none in this application)
 
