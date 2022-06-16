@@ -45,6 +45,10 @@
 /// For CAN FD the queue can be smaller.
 #define CAN_TX_QUEUE_CAPACITY 100
 
+
+reg_rmap_module_TH_1_0 module_th_msg = {0};
+
+
 /// We keep the state of the application here. Feel free to use static variables instead if desired.
 typedef struct State
 {
@@ -185,24 +189,15 @@ static void handleFastLoop(State* const state, const CanardMicrosecond monotonic
     // Publish differential pressure reading if the subject is enabled and the node is non-anonymous.
     if (!anonymous && (state->port_id.pub.module_th <= CANARD_SUBJECT_ID_MAX))
     {
-        reg_rmap_module_TH_1_0 msg = {0};
 
-	msg.metadata.timerange.Pindicator = 254;
-	msg.metadata.timerange.P1 = 0;
-	msg.metadata.timerange.P2 = 0;
-	msg.metadata.level.LevelType1 = 103;
-	msg.metadata.level.L1 = 2000;
-	msg.metadata.level.LevelType2 = 0;
-	msg.metadata.level.L2 = 0;
-	
-        msg.temperature.val.value                 = (int32_t) (rand() % 2000 + 27315);  // TODO: sample data from the real sensor.
-        msg.temperature.confidence.value          = (uint8_t) (rand() % 100       );  // TODO: sample data from the real sensor.
-	msg.humidity.val.value                    = (int32_t) (rand() % 100       );  // TODO: sample data from the real sensor.
-	msg.humidity.confidence.value             = (uint8_t) (rand() % 100       );  // TODO: sample data from the real sensor.
+        module_th_msg.temperature.val.value                 = (int32_t) (rand() % 2000 + 27315);  // TODO: sample data from the real sensor.
+        module_th_msg.temperature.confidence.value          = (uint8_t) (rand() % 100       );  // TODO: sample data from the real sensor.
+	module_th_msg.humidity.val.value                    = (int32_t) (rand() % 100       );  // TODO: sample data from the real sensor.
+	module_th_msg.humidity.confidence.value             = (uint8_t) (rand() % 100       );  // TODO: sample data from the real sensor.
         // Serialize and publish the message:
         uint8_t      serialized[reg_rmap_module_TH_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};
         size_t       serialized_size = sizeof(serialized);
-        const int8_t err = reg_rmap_module_TH_1_0_serialize_(&msg, &serialized[0], &serialized_size);
+        const int8_t err = reg_rmap_module_TH_1_0_serialize_(&module_th_msg, &serialized[0], &serialized_size);
         assert(err >= 0);
         if (err >= 0)
         {
@@ -296,24 +291,15 @@ static void handle1HzLoop(State* const state, const CanardMicrosecond monotonic_
     // Publish module_th reading if the subject is enabled and the node is non-anonymous.
     if (!anonymous && state->port_id.pub.module_th <= CANARD_SUBJECT_ID_MAX)
     {
-        reg_rmap_module_TH_1_0 msg = {0};
-	msg.metadata.timerange.Pindicator = 254;
-	msg.metadata.timerange.P1 = 0;
-	msg.metadata.timerange.P2 = 0;
-	msg.metadata.level.LevelType1 = 103;
-	msg.metadata.level.L1 = 2000;
-	msg.metadata.level.LevelType2 = 0;
-	msg.metadata.level.L2 = 0;
-	
-        msg.temperature.val.value                 = (int32_t) (rand() % 2000 + 27315);  // TODO: sample data from the real sensor.
-        msg.temperature.confidence.value          = (uint8_t) (rand() % 100       );  // TODO: sample data from the real sensor.
-	msg.humidity.val.value                    = (int32_t) (rand() % 100       );  // TODO: sample data from the real sensor.
-	msg.humidity.confidence.value             = (uint8_t) (rand() % 100       );  // TODO: sample data from the real sensor.
+        module_th_msg.temperature.val.value                 = (int32_t) (rand() % 2000 + 27315);  // TODO: sample data from the real sensor.
+        module_th_msg.temperature.confidence.value          = (uint8_t) (rand() % 100       );  // TODO: sample data from the real sensor.
+	module_th_msg.humidity.val.value                    = (int32_t) (rand() % 100       );  // TODO: sample data from the real sensor.
+	module_th_msg.humidity.confidence.value             = (uint8_t) (rand() % 100       );  // TODO: sample data from the real sensor.
 
         // Serialize and publish the message:
         uint8_t      serialized[reg_rmap_module_TH_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};
         size_t       serialized_size = sizeof(serialized);
-        const int8_t err = reg_rmap_module_TH_1_0_serialize_(&msg, &serialized[0], &serialized_size);
+        const int8_t err = reg_rmap_module_TH_1_0_serialize_(&module_th_msg, &serialized[0], &serialized_size);
         assert(err >= 0);
 	if (err >= 0)
         {
@@ -490,7 +476,7 @@ static uavcan_register_Access_Response_1_0 processRequestRegisterAccess(const ua
     // If we're asked to write a new value, do it now:
     if (!uavcan_register_Value_1_0_is_empty_(&req->value))
     {
-        uavcan_register_Value_1_0_select_empty_(&resp.value);
+	uavcan_register_Value_1_0_select_empty_(&resp.value);
         registerRead(&name[0], &resp.value);
         // If such register exists and it can be assigned from the request value:
         if (!uavcan_register_Value_1_0_is_empty_(&resp.value) && registerAssign(&resp.value, &req->value))
@@ -740,6 +726,52 @@ int main(const int argc, char* const argv[])
     state.port_id.pub.module_th =
         getPublisherSubjectID("reg.rmap.module.TH.1.0",
 			      reg_rmap_module_TH_1_0_FULL_NAME_AND_VERSION_);
+
+
+
+    // Set up the default value. It will be used to populate the register if it doesn't exist.
+    uavcan_register_Value_1_0_select_natural16_(&val);
+    val.natural16.value.count       = 1;
+    val.natural16.value.elements[0] = UINT16_MAX;  // This means "undefined", per Specification, which is the default.
+
+
+    // Set up the default value. It will be used to populate the register if it doesn't exist.
+    //uavcan_register_Value_1_0 val = {0};
+    uavcan_register_Value_1_0_select_natural16_(&val);
+    val.natural16.value.count       = 1;
+    val.natural16.value.elements[0] = UINT16_MAX;  // This means "undefined", per Specification, which is the default.
+    registerRead("reg.rmap.module.TH.metadata.Timerange.Pindicator", &val);  // Unconditionally overwrite existing value because it's read-only.
+    module_th_msg.metadata.timerange.Pindicator = val;
+    
+    registerRead("reg.rmap.module.TH.metadata.Timerange.P1", &val);  // Unconditionally overwrite existing value because it's read-only.
+    module_th_msg.metadata.timerange.P1 = val;
+    
+    registerRead("reg.rmap.module.TH.metadata.Timerange.P2", &val);  // Unconditionally overwrite existing value because it's read-only.
+    module_th_msg.metadata.timerange.P2 = val;
+    
+    
+    registerRead("reg.rmap.module.TH.metadata.Level.LevelType1", &val);  // Unconditionally overwrite existing value because it's read-only.
+    module_th_msg.metadata.level.LevelType1 = val;
+    
+    registerRead("reg.rmap.module.TH.metadata.Level.L1", &val);  // Unconditionally overwrite existing value because it's read-only.
+    module_th_msg.metadata.level.L1 = val;
+    
+    registerRead("reg.rmap.module.TH.metadata.Level.LevelType2", &val);  // Unconditionally overwrite existing value because it's read-only.
+    module_th_msg.metadata.level.LevelType2 = val;
+
+    registerRead("reg.rmap.module.TH.metadata.Level.L2", &val);  // Unconditionally overwrite existing value because it's read-only.
+    module_th_msg.metadata.level.L2 = val;
+
+    /*
+    registerWrite("reg.rmap.module.TH.metadata.Timerange.Pindicator", &val);  // Unconditionally overwrite existing value because it's read-only.
+    registerWrite("reg.rmap.module.TH.metadata.Timerange.P1", &val);  // Unconditionally overwrite existing value because it's read-only.
+    registerWrite("reg.rmap.module.TH.metadata.Timerange.P2", &val);  // Unconditionally overwrite existing value because it's read-only.
+    registerWrite("reg.rmap.module.TH.metadata.Level.LevelType1", &val);  // Unconditionally overwrite existing value because it's read-only.
+    registerWrite("reg.rmap.module.TH.metadata.Level.L1", &val);  // Unconditionally overwrite existing value because it's read-only.
+    registerWrite("reg.rmap.module.TH.metadata.Level.LevelType2", &val);  // Unconditionally overwrite existing value because it's read-only.
+    registerWrite("reg.rmap.module.TH.metadata.Level.L2", &val);  // Unconditionally overwrite existing value because it's read-only.
+    */
+
     // Subscriptions:
     // (none in this application)
 

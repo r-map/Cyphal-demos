@@ -1,5 +1,5 @@
-uint8 LevelType1
-uint16 L1
-uint8 LevelType2
-uint16 L2
+uavcan.register.Value.natural8 LevelType1
+uavcan.register.Value.integer32 L1
+uavcan.register.Value.natural8 LevelType2
+uavcan.register.Value.integer32 L2
 @sealed

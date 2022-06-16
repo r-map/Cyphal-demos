@@ -95,6 +95,17 @@ Configure the subject-IDs:
 y r 125 uavcan.pub.reg.rmap.module.TH.1.0.id 100
 ```
 
+
+Configure the metadata registers:
+
+```bash
+y r 125 reg.rmap.module.TH.metadata.Level.LevelType1 103
+y r 125 reg.rmap.module.TH.metadata.Level.L1 2000
+y r 125 reg.rmap.module.TH.metadata.timerange.Pindicator 254
+y r 125 reg.rmap.module.TH.metadata.Timerange.P1 0
+y r 125 reg.rmap.module.TH.metadata.Timerange.P2 0
+``` 
+
 The node is configured now, but we need to restart it before the configuration parameter changes take effect:
 
 ```bash

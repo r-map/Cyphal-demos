@@ -1,4 +1,4 @@
-uint8 Pindicator
-uint16 P1
-uint16 P2
+uavcan.register.Value Pindicator
+uavcan.register.Value P1
+uavcan.register.Value P2
 @sealed
