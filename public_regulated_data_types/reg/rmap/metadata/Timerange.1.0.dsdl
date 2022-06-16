@@ -1,4 +1,4 @@
-uavcan.register.Value Pindicator
-uavcan.register.Value P1
-uavcan.register.Value P2
+uavcan.register.Value.1.0 Pindicator
+uavcan.register.Value.1.0 P1
+uavcan.register.Value.1.0 P2
 @sealed
