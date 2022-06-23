@@ -95,6 +95,11 @@ Configure the subject-IDs:
 y r 125 uavcan.pub.reg.rmap.module.TH.1.0.id 100
 ```
 
+Configure the service-IDs:
+
+```bash
+y r 125 reg.rmap.service.module.TH.GetDataAndMetadata.1.0.id 150
+```
 
 Configure the metadata registers:
 
@@ -121,6 +126,12 @@ You can subscribe to the published differential pressure using Yakut as follows:
 
 ```bash
 y sub 100:reg.rmap.module.TH
+```
+
+You can call a service using Yakut as follows:
+
+```bash
+y call 125 150:reg.rmap.service.module.TH.GetDataAndMetadata.1.0
 ```
 
 You can erase the configuration and go back to factory defaults as follows:
