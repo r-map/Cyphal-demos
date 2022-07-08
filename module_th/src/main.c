@@ -343,9 +343,13 @@ static void fillServers(const CanardTreeNode* const tree, uavcan_node_port_Servi
     {
         fillServers(tree->lr[0], obj);
         const CanardRxSubscription* crs = (const CanardRxSubscription*) tree;
-        assert(crs->port_id <= CANARD_SERVICE_ID_MAX);
-        (void) nunavutSetBit(&obj->mask_bitpacked_[0], sizeof(obj->mask_bitpacked_), crs->port_id, true);
-        fillServers(tree->lr[1], obj);
+        //assert (crs->port_id <= CANARD_SERVICE_ID_MAX);
+        if(crs->port_id <= CANARD_SERVICE_ID_MAX){
+	  (void) nunavutSetBit(&obj->mask_bitpacked_[0], sizeof(obj->mask_bitpacked_), crs->port_id, true);
+	  fillServers(tree->lr[1], obj);
+	} else {
+	  printf("Skip server: %d > %d\n", crs->port_id, CANARD_SERVICE_ID_MAX);
+	}
     }
 }
 

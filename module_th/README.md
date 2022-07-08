@@ -92,7 +92,7 @@ $ y rl 125, | y rb                              # You can also read all register
 Configure the subject-IDs:
 
 ```bash
-y r 125 uavcan.pub.reg.rmap.module.TH.1.0.id 100
+y r 125 reg.rmap.module.TH.1.0.id 100
 ```
 
 Configure the service-IDs:
