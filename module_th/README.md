@@ -19,10 +19,9 @@ Build the demo as follows:
 ```bash
 git clone --recursive https://github.com/OpenCyphal/demos
 cd demos/module_th
-cp -r ../public_regulated_data_types/reg/rmap ../submodules/public_regulated_data_types/reg/
 mkdir build && cd build
+yakut compile ../../submodules/public_regulated_data_types/uavcan ../../submodules/public_regulated_data_types/reg ../../private_data_types/rmap
 cmake .. && make
-yakut compile ../../submodules/public_regulated_data_types/uavcan ../../submodules/public_regulated_data_types/reg
 ```
 
 

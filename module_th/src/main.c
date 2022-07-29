@@ -30,8 +30,8 @@
 //#include <uavcan/si/unit/pressure/Scalar_1_0.h>
 //#include <uavcan/si/unit/temperature/Scalar_1_0.h>
 
-#include <reg/rmap/_module/TH_1_0.h>
-#include <reg/rmap/service/_module/TH/GetDataAndMetadata_1_0.h>
+#include <rmap/_module/TH_1_0.h>
+#include <rmap/service/_module/TH/GetDataAndMetadata_1_0.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,7 +47,7 @@
 #define CAN_TX_QUEUE_CAPACITY 100
 
 
-reg_rmap_module_TH_1_0 module_th_msg = {0};
+rmap_module_TH_1_0 module_th_msg = {0};
 
 
 /// We keep the state of the application here. Feel free to use static variables instead if desired.
@@ -204,9 +204,9 @@ static void handleFastLoop(State* const state, const CanardMicrosecond monotonic
     {
       updateSensorsData();
       // Serialize and publish the message:
-      uint8_t      serialized[reg_rmap_module_TH_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};
+      uint8_t      serialized[rmap_module_TH_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};
       size_t       serialized_size = sizeof(serialized);
-      const int8_t err = reg_rmap_module_TH_1_0_serialize_(&module_th_msg, &serialized[0], &serialized_size);
+      const int8_t err = rmap_module_TH_1_0_serialize_(&module_th_msg, &serialized[0], &serialized_size);
       assert(err >= 0);
       if (err >= 0)
         {
@@ -304,9 +304,9 @@ static void handle1HzLoop(State* const state, const CanardMicrosecond monotonic_
 	updateSensorsData();
 	
         // Serialize and publish the message:
-        uint8_t      serialized[reg_rmap_module_TH_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};
+        uint8_t      serialized[rmap_module_TH_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};
         size_t       serialized_size = sizeof(serialized);
-        const int8_t err = reg_rmap_module_TH_1_0_serialize_(&module_th_msg, &serialized[0], &serialized_size);
+        const int8_t err = rmap_module_TH_1_0_serialize_(&module_th_msg, &serialized[0], &serialized_size);
         assert(err >= 0);
 	if (err >= 0)
         {
@@ -565,9 +565,9 @@ static void processReceivedTransfer(State* const state, const CanardRxTransfer* 
 	    updateSensorsData();
 	    
 	    // Serialize and publish the message:
-	    uint8_t      serialized[reg_rmap_module_TH_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};
+	    uint8_t      serialized[rmap_module_TH_1_0_SERIALIZATION_BUFFER_SIZE_BYTES_] = {0};
 	    size_t       serialized_size = sizeof(serialized);
-	    const int8_t res = reg_rmap_module_TH_1_0_serialize_(&module_th_msg, &serialized[0], &serialized_size);
+	    const int8_t res = rmap_module_TH_1_0_serialize_(&module_th_msg, &serialized[0], &serialized_size);
 	    if (res >= 0)
 	      {
 		// Send the response back. Make sure to re-use the same priority and transfer-ID.
@@ -761,11 +761,11 @@ int main(const int argc, char* const argv[])
     // Publications:
     state.port_id.pub.module_th =
         getPublisherSubjectID("reg.rmap.module.TH.1.0",
-			      reg_rmap_module_TH_1_0_FULL_NAME_AND_VERSION_);
+			      rmap_module_TH_1_0_FULL_NAME_AND_VERSION_);
 
     state.port_id.pub.service_module_th =
         getPublisherSubjectID("reg.rmap.service.module.TH.GetDataAndMetadata.1.0",
-			      reg_rmap_service_module_TH_GetDataAndMetadata_1_0_FULL_NAME_AND_VERSION_);
+			      rmap_service_module_TH_GetDataAndMetadata_1_0_FULL_NAME_AND_VERSION_);
     
     // Set up the default value. It will be used to populate the register if it doesn't exist.
     uavcan_register_Value_1_0_select_natural32_(&val);
@@ -887,13 +887,13 @@ int main(const int argc, char* const argv[])
 	canardRxSubscribe(&state.canard,
 			  CanardTransferKindRequest,
 			  state.port_id.pub.service_module_th,
-			  reg_rmap_service_module_TH_GetDataAndMetadata_Request_1_0_EXTENT_BYTES_,
+			  rmap_service_module_TH_GetDataAndMetadata_Request_1_0_EXTENT_BYTES_,
 			  CANARD_DEFAULT_TRANSFER_ID_TIMEOUT_USEC,
 			  &rx);
       
       if (res < 0)
         {
-	  printf("not subscribed to  reg_rmap_service_module_TH_GetDataAndMetadata_Request\n");
+	  printf("not subscribed to  rmap_service_module_TH_GetDataAndMetadata_Request\n");
 	  //return -res;
         }
       else

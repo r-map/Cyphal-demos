@@ -44,6 +44,7 @@ create_dsdl_target(             # Generate the support library for generated C h
 set(dsdl_root_namespace_dirs                # List all DSDL root namespaces to transpile here.
         ${submodules}/public_regulated_data_types/uavcan
         ${submodules}/public_regulated_data_types/reg
+        ${submodules}/../private_data_types/rmap
 )
 foreach (ns_dir ${dsdl_root_namespace_dirs})
     get_filename_component(ns ${ns_dir} NAME)
@@ -77,5 +78,5 @@ add_executable(module_th
         src/register.c
         src/socketcan.c
 )
-add_dependencies(module_th dsdl_uavcan dsdl_reg)
+add_dependencies(module_th dsdl_uavcan dsdl_reg dsdl_rmap)
 target_link_libraries(module_th canard o1heap)
