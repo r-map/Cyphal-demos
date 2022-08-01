@@ -760,11 +760,11 @@ int main(const int argc, char* const argv[])
     // Load the port-IDs from the registers. You can implement hot-reloading at runtime if desired.
     // Publications:
     state.port_id.pub.module_th =
-        getPublisherSubjectID("reg.rmap.module.TH.1.0",
+        getPublisherSubjectID("rmap.module.TH.1.0",
 			      rmap_module_TH_1_0_FULL_NAME_AND_VERSION_);
 
     state.port_id.pub.service_module_th =
-        getPublisherSubjectID("reg.rmap.service.module.TH.GetDataAndMetadata.1.0",
+        getPublisherSubjectID("rmap.service.module.TH.GetDataAndMetadata.1.0",
 			      rmap_service_module_TH_GetDataAndMetadata_1_0_FULL_NAME_AND_VERSION_);
     
     // Set up the default value. It will be used to populate the register if it doesn't exist.
@@ -773,16 +773,16 @@ int main(const int argc, char* const argv[])
     val.natural32.value.elements[0] = UINT32_MAX;  // This means "undefined", per Specification, which is the default.
 
 
-    registerRead("reg.rmap.module.TH.metadata.Level.L1", &val);  // Unconditionally overwrite existing value because it's read-only.
+    registerRead("rmap.module.TH.metadata.Level.L1", &val);  // Unconditionally overwrite existing value because it's read-only.
     module_th_msg.metadata.level.L1.value = val.natural32.value.elements[0];
     
-    registerRead("reg.rmap.module.TH.metadata.Level.L2", &val);  // Unconditionally overwrite existing value because it's read-only.
+    registerRead("rmap.module.TH.metadata.Level.L2", &val);  // Unconditionally overwrite existing value because it's read-only.
     module_th_msg.metadata.level.L2.value = val.natural32.value.elements[0];
 
-    registerRead("reg.rmap.module.TH.metadata.Timerange.P1", &val);  // Unconditionally overwrite existing value because it's read-only.
+    registerRead("rmap.module.TH.metadata.Timerange.P1", &val);  // Unconditionally overwrite existing value because it's read-only.
     module_th_msg.metadata.timerange.P1.value = val.natural32.value.elements[0];
     
-    registerRead("reg.rmap.module.TH.metadata.Timerange.P2", &val);  // Unconditionally overwrite existing value because it's read-only.
+    registerRead("rmap.module.TH.metadata.Timerange.P2", &val);  // Unconditionally overwrite existing value because it's read-only.
     module_th_msg.metadata.timerange.P2.value = val.natural32.value.elements[0];
     
 
@@ -791,14 +791,14 @@ int main(const int argc, char* const argv[])
     val.natural16.value.count       = 1;
     val.natural16.value.elements[0] = UINT8_MAX;  // This means "undefined", per Specification, which is the default.
 
-    registerRead("reg.rmap.module.TH.metadata.Timerange.Pindicator", &val);  // Unconditionally overwrite existing value because it's read-only.
+    registerRead("rmap.module.TH.metadata.Timerange.Pindicator", &val);  // Unconditionally overwrite existing value because it's read-only.
     module_th_msg.metadata.timerange.Pindicator.value = val.natural8.value.elements[0];
 
     
-    registerRead("reg.rmap.module.TH.metadata.Level.LevelType1", &val);  // Unconditionally overwrite existing value because it's read-only.
+    registerRead("rmap.module.TH.metadata.Level.LevelType1", &val);  // Unconditionally overwrite existing value because it's read-only.
     module_th_msg.metadata.level.LevelType1.value = val.natural8.value.elements[0];
 
-    registerRead("reg.rmap.module.TH.metadata.Level.LevelType2", &val);  // Unconditionally overwrite existing value because it's read-only.
+    registerRead("rmap.module.TH.metadata.Level.LevelType2", &val);  // Unconditionally overwrite existing value because it's read-only.
     module_th_msg.metadata.level.LevelType2.value = val.natural8.value.elements[0];    
     
     // Subscriptions:
